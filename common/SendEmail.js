@@ -14,7 +14,6 @@ var mail = {
   },
   send : function(pData, callback) {
     let mailData = _us.extend(this.data, pData);
-    log.info('sending email: %j', mailData);
     transport.sendMail(mailData, callback);
   }
 }
