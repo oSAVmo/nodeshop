@@ -5,15 +5,16 @@ var express = require('express');
 var router = express.Router();
 
 router.post('/mail', function(req, res, next) {
-  
+
   var mailData = {
+    from : req.body.fromAddress === undefined ? 'osavmail@gmail.com' : req.body.fromAddress,
     to : req.body.emailto,
     cc : req.body.cclist,
-    replyTo : 'christinachenjy@gmail.com',
+    replyTo : req.body.fromAddress === undefined ? 'christinachenjy@gmail.com' : req.body.fromAddress,
     subject : req.body.subject,
     html : req.body.emailContent
   }
-  
+
   emailCtrl(mailData, function(success) {
     if (success) {
       res.json({
