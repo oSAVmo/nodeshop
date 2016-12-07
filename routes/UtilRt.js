@@ -1,16 +1,20 @@
+var log = require('../config/logger');
 var emailCtrl = require('../controller/UtilCtrl').email;
 
 var express = require('express');
 var router = express.Router();
 
 router.post('/mail', function(req, res, next) {
+  log.info('raw raw data: %j', req.body);
   var mailData = {
-    to : req.body.to,
-    cc : req.body.cc,
+    to : req.body.emailto,
+    cc : req.body.cclist,
     replyTo : req.body.replyTo,
     subject : req.body.subject,
-    html : req.body.content
+    html : req.body.emailContent
   }
+  
+  log.info(mailData);
   emailCtrl(mailData, function(success) {
     if (success) {
       res.json({
