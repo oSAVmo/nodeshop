@@ -9,7 +9,7 @@ router.post('/mail', function(req, res, next) {
   var mailData = {
     to : req.body.emailto,
     cc : req.body.cclist,
-    replyTo : req.body.replyTo,
+    replyTo : 'christinachenjy@gmail.com',
     subject : req.body.subject,
     html : req.body.emailContent
   }
