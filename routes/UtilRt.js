@@ -5,7 +5,7 @@ var express = require('express');
 var router = express.Router();
 
 router.post('/mail', function(req, res, next) {
-  log.info('raw raw data: %j', req.body);
+  
   var mailData = {
     to : req.body.emailto,
     cc : req.body.cclist,
@@ -14,7 +14,6 @@ router.post('/mail', function(req, res, next) {
     html : req.body.emailContent
   }
   
-  log.info(mailData);
   emailCtrl(mailData, function(success) {
     if (success) {
       res.json({
