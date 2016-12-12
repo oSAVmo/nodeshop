@@ -4,9 +4,9 @@ var app = express();
 
 app.all('*', function(req, res, next) {
 //  console.log('this is a console out');
-  log.info('REQUEST LOG: requesting %j from %j', req.url, req.headers.host | req.headers.orgin);
+  log.info('REQUEST LOG: requesting %j from %j | %j', req.url, req.headers.host, req.headers.orgin);
   next();
-})
+});
 
 app.all('/shopify', function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');

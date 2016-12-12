@@ -1,12 +1,13 @@
 var nodemailer = require('nodemailer');
+var conf = require('./conf');
 
 var mailer = {
   sender : function() {
     return nodemailer.createTransport({
-      service : 'Gmail',
+      service : conf.email.service,
       auth : {
-        user : 'osavmailer@gmail.com',
-        pass : 'q0w9e8r7'
+        user : conf.email.account,
+        pass : conf.email.password
       }
     });
   }

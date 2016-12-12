@@ -1,14 +1,7 @@
 var mysql = require('mysql2');
 var log = require('./logger');
 
-var db = {
-  'driver' : 'mysql',
-  'host' : 'localhost',
-  'port' : '3306',
-  'database' : 'osavmo',
-  'user' : 'osavmoadmin',
-  'password' : 'zxPHDrKXEm29GQc5'
-};
+var db = require('./conf').mysql;
 
 db.init = function() {
   mysql.createPool(this);

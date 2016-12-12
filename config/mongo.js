@@ -1,12 +1,7 @@
 var mongodb = require('mongodb');
 var client = require('mongodb').MongoClient;
 var log = require('./logger');
-var db = {
-  prefix : 'mongodb://',
-  url : '127.0.0.1',
-  port : '27017',
-  database : 'osavmo'
-};
+var db = require('./conf').mongodb;
 
 db.init = function() {
   try {
