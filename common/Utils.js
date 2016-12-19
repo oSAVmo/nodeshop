@@ -16,3 +16,13 @@ exports.formatFormJSON = function(formData) {
   });
   return result;
 }
+
+exports.md5 = function(str) {
+  
+  if(str === null || str === undefined || str.length === 0) {
+    return '';
+  }
+  
+  const crypto = require('crypto');
+  return crypto.createHash('md5').update(str).digest('hex');  
+}

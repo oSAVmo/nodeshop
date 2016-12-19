@@ -1,16 +1,20 @@
-var mysql = require('../config/mysql');
+var md5 = require('../common/Utils').md5;
 var userCtrl = require('../controller/UserCtrl');
+var log = require('../config/logger');
 
 var express = require('express');
 var router = express.Router();
 
 /* GET users listing. */
 router.get('/login', function(req, res, next) {
+  
   var user = {
-    email : req.params('email'),
-    password : req.params('password')
+    email : 'void_yw@hotmail.com',
+    password : md5('kof980')
   };
-
+  
+  log.info(user);
+  
   userCtrl.userLogin(user, function(result) {
     if (result) {
       // session

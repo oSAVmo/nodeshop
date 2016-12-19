@@ -3,7 +3,7 @@ var client = require('mongodb').MongoClient;
 var log = require('./logger');
 var db = require('./conf').mongodb;
 
-db.init = function() {
+db.init = function(next) {
   try {
     // Initialize connection once
     client.connect(getConnStr(db), function(err, database) {
@@ -13,6 +13,7 @@ db.init = function() {
       
       db.conn = database;
       log.info('MongoDB initialized...');
+      next();
     });
   } catch(e) {
     log.error(e)
