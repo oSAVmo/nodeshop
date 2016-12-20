@@ -2,11 +2,11 @@ var express = require('express');
 var log = require('../config/logger');
 var app = express();
 
-const exeptions = [ '/user/login', '/shopify', '/general', '/utilities/mail'];
+const exeptions = [ '/user/login', '/shopify', '/general', '/utilities'];
 
 app.all('/shopify/*', function(req, res, next) {
   log.info('ACCESS TO SHOPIFY');
-  res.header('Access-Control-Allow-Origin', 'http://bobs-test.myshopify.com');
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   next();
 });
