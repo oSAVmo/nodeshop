@@ -1,6 +1,6 @@
 var transport = require('../config/email').sender();
 var _us = require('underscore');
-var log = require('../config/logger');
+var log = require('./logger');
 
 var mail = {
   data : {

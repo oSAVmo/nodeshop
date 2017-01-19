@@ -1,7 +1,7 @@
 var mongodb = require('mongodb');
 var client = require('mongodb').MongoClient;
 var log = require('./logger');
-var db = require('./conf').mongodb;
+var db = require('../config/conf').mongodb;
 
 db.init = function(next) {
   try {
@@ -10,7 +10,6 @@ db.init = function(next) {
       if (err) {
         throw err;
       }
-      
       db.conn = database;
       log.info('MongoDB initialized...');
       next();

@@ -1,10 +1,10 @@
-var _us = require('underscore');
+var _ = require('underscore');
 
-// format form data from {name:foo, value:bar} to {foo:bar}
+// Format form data from {name:foo, value:bar} to {foo:bar}
 exports.formatFormJSON = function(formData) {
   
   var result = {};
-  _us.each(formData, function() {
+  _.each(formData, function() {
       if (result[this.name] !== undefined) {
           if (!result[this.name].push) {
             result[this.name] = [result[this.name]];
@@ -17,6 +17,7 @@ exports.formatFormJSON = function(formData) {
   return result;
 }
 
+//MD5 Encryption
 exports.md5 = function(str) {
   
   if(str === null || str === undefined || str.length === 0) {

@@ -1,7 +1,7 @@
 var mysql = require('mysql2');
 var log = require('./logger');
 
-var db = require('./conf').mysql;
+var db = require('../config/conf').mysql;
 
 db.init = function() {
   this.pool = mysql.createPool(db);
