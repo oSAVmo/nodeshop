@@ -1,5 +1,5 @@
-var mongo = require('../config/mongo');
-var log = require('../config/logger');
+var mongo = require('../common/mongo');
+var log = require('../common/logger');
 
 var onlinOrderDao = {
   module : 'dao',

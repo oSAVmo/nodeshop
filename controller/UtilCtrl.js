@@ -1,8 +1,8 @@
-var log = require('../config/logger');
+var log = require('../common/logger');
 var mail = require('../common/SendEmail');
 
 var util = {
-  email : function(mailData, callback) {
+  'email' : function(mailData, callback) {
     mail.send(mailData, function(err, info) {
       if (err) {
         log.error(err);

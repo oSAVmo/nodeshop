@@ -1,10 +1,10 @@
-var log = require('../config/logger');
+var log = require('../common/logger');
 var mail = require('../common/SendEmail');
 
 var tests = {
     
   // test email module
-  testMail : function(callback) {
+  'testMail' : function(callback) {
     log.info('sending mail');
     mail.send({}, function(err, info) {
       log.info('send finished---Returning result...');

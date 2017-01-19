@@ -1,5 +1,5 @@
-var mongo = require('../config/mongo');
-var log = require('../config/logger');
+
+var log = require('../common/logger');
 var onlineOrderDao = require('../dao/OnlineOrderDao');
 
 var onlineOrderCtrl = {module: 'controller', name: 'OnlineOrderCtrl'};

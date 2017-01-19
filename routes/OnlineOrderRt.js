@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var log = require('../config/logger');
+var log = require('../common/logger');
 var ctrl = require('../controller/OnlineOrderCtrl');
 
 /* GET home page. */

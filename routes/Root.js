@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var log = require('../config/logger');
+var log = require('../common/logger');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {

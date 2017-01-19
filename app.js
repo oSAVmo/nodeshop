@@ -6,13 +6,25 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
-var log = require('./config/logger');
 var jsons = require('JSON2');
-var mongo = require('./config/mongo');
-var mysql = require('./config/mysql');
+
+var log = require('./common/logger');
+var mongo = require('./common/mongo');
+var mysql = require('./common/mysql');
 var conf = require('./config/conf');
+var mongoDBInit = require('./common/MongoInit');
 
 var app = express();
+
+//uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+//app.use(express.static(path.join(__dirname, 'public')));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+extended : true
+}));
+app.use(cookieParser());
 
 mongo.init(function() {
   //session
@@ -26,51 +38,47 @@ mongo.init(function() {
       collection : conf.session.collection
     })
   }));
-});
-mysql.init();
+  log.info('session initialized...');
+  
+  mongoDBInit.init();
+  mysql.init();
 
-var routerConfig = require('./routes/_router');
+  let routerConfig = require('./routes/_router');
+  let routerFilter = require('./routes/_filter');
+  log.info('initialize router and filter...');
+  app.use(routerFilter);
+  app.use(routerConfig);
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-//app.use(express.static(path.join(__dirname, 'public')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-  extended : true
-}));
-app.use(cookieParser());
-
-
-
-app.use(routerConfig);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  res.status(404);
-  res.json({
-    error : true,
-    message : 'RESOUCE NOT FOUND'
+  // catch 404 and forward to error handler
+  app.use(function(req, res, next) {
+    res.status(404);
+    res.json({
+      error : true,
+      message : 'RESOURCE NOT FOUND'
+    });
   });
-});
 
-// error handlers
+  // error handlers
 
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
+  // development error handler
+  // will print stacktrace
+  if (app.get('env') === 'development') {
+    app.use(function(err, req, res, next) {
+      log.error('Uncaught Exception, check exception log.', err);
+    });
+  }
+
+  // production error handler
+  // no stacktraces leaked to user
   app.use(function(err, req, res, next) {
-    log.error('Uncaught Exception, check exception log.', err);
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500).json({
-    message : err.message,
-    error : err
+    res.status(err.status || 500).json({
+      message : err.message,
+      error : err
+    });
   });
 });
+
+
+
 
 module.exports = app;

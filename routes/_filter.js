@@ -1,11 +1,11 @@
 var express = require('express');
-var log = require('../config/logger');
+var log = require('../common/logger');
 var app = express();
 
 const exeptions = [ '/user/login', '/shopify', '/general', '/utilities/mail'];
 
-app.all('/shopify/*', function(req, res, next) {
-  log.info('ACCESS TO SHOPIFY');
+app.all('*', function(req, res, next) {
+  log.info('grant CROSS DOMAIN...');
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   next();
@@ -43,6 +43,8 @@ function matchException(path) {
     log.info(str);
     if (path.startsWith(str)) {
       return true;
+    } else {
+      log.info()
     }
   }
   return false;

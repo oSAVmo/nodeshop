@@ -1,23 +1,33 @@
 var md5 = require('../common/Utils').md5;
 var userCtrl = require('../controller/UserCtrl');
-var log = require('../config/logger');
+var log = require('../common/logger');
 
+var ObjectID = require('mongodb').ObjectID;
 var express = require('express');
 var router = express.Router();
 
-/* GET users listing. */
+/** login */
 router.get('/login', function(req, res, next) {
-  
+
+  log.info('useremail: ' + req.query.useremail);
+  log.info('password: ' + req.query.password);
   var user = {
-    email : 'void_yw@hotmail.com',
-    password : md5('kof980')
+    email : req.query.useremail,
+    password : md5(req.query.password)
   };
-  
-  log.info(user);
-  
-  userCtrl.userLogin(user, function(result) {
+
+  userCtrl.userLogin(user, function(error, result) {
+    if(error) {
+      res.json({
+        error : 1,
+        data : false,
+        msg : 'System Error'
+      });
+    }
+    log.info(result);
     if (result) {
       // session
+      req.session.user = result;
       res.json({
         error : 0,
         data : result,

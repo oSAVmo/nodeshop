@@ -19,6 +19,7 @@
     "nodemailer": "^2.6.4",
     "request": "^2.79.0",
     "serve-favicon": "~2.3.0",
+    "shopify-api-node": "^2.3.0",
     "underscore": "^1.8.3",
     "underscore.string": "^3.3.4",
     "winston": "^2.3.0",

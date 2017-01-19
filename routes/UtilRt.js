@@ -1,4 +1,4 @@
-var log = require('../config/logger');
+var log = require('../common/logger');
 var emailCtrl = require('../controller/UtilCtrl').email;
 
 var express = require('express');
