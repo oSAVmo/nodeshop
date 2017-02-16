@@ -1,0 +1,79 @@
+<html>
+<head>
+  <style>
+    html,body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+    div#inputs{
+      margin: 5px;
+      font-family: courier;
+    }
+    div#outputs {
+      background-color: lightgray;
+    }
+  </style>
+  <script type="text/javascript" src="javascripts/jquery-3.1.1.min.js"></script>
+  <script type="text/javascript">
+    $(function() {
+      $('#fsubmit').on('click', submitForm);
+    });
+
+    function submitForm(event) {
+      let dataObj = null;
+      try {
+        dataObj = eval('(' + $('#fparam').val() + ')');
+      } catch(e) {
+        console.log(e);
+      }
+
+      let params = {
+        url: $('#fpath').val(),
+        method: $('#fmethod option:selected').val(),
+        data: dataObj,
+        dataType: 'json',
+        success: function(data, textStatus, jqXHR) {
+          console.log(data);
+          let result = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+          console.log(result);
+          $('#outputs').html(result);
+          $('#respstatus').css('backgroundColor', 'green');
+        },
+        error: function(jqXHR, textStatus, error) {
+          let err = '<pre>' + error + '</pre>';
+          $('#outputs').html(err);
+          $('#respstatus').css('backgroundColor', 'red');
+        },
+        complete: function(jqXHR, textStatus) {
+          $('#respstatus').html(textStatus);
+        }
+      };
+      console.log(params);
+      $.ajax(params);
+    }
+  </script>
+</head>
+<body>
+  <div id="inputs">
+    Path: <input id="fpath" name="fpath" type="text" size="60" value="user/login"/>
+    Method:
+    <select id="fmethod" name="fmethod">
+      <option value="GET">GET</option>
+      <option value="POST" selected>POST</option>
+      <option value="PUT">PUT</option>
+      <option value="DELETE">DELETE</option>
+    </select>
+    <button id="fsubmit">SUBMIT</button><br />
+    Param: <br/>
+    <textarea cols="70" rows="5" id="fparam" name="fparam">
+      {"useremail": "admin@osavmo.com", "password":"4f3d2s1a"}
+    </textarea><br/>
+  </div>
+  <hr/>
+  <div id='respstatus'></div>
+  <div id="outputs">
+    123
+  </div>
+</body>
+</html>

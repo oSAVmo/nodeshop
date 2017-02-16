@@ -7,21 +7,23 @@ var express = require('express');
 var router = express.Router();
 
 /** login */
-router.get('/login', function(req, res, next) {
+router.post('/login', function(req, res, next) {
 
-  log.info('useremail: ' + req.query.useremail);
-  log.info('password: ' + req.query.password);
+  log.info('useremail: ' + req.body.useremail);
+  log.info('password: ' + req.body.password);
   var user = {
-    email : req.query.useremail,
-    password : md5(req.query.password)
+    email: req.body.useremail,
+    password: md5(req.body.password)
   };
 
+  log.info(user);
+
   userCtrl.userLogin(user, function(error, result) {
-    if(error) {
+    if (error) {
       res.json({
-        error : 1,
-        data : false,
-        msg : 'System Error'
+        error: 1,
+        data: false,
+        msg: 'System Error'
       });
     }
     log.info(result);
@@ -29,15 +31,15 @@ router.get('/login', function(req, res, next) {
       // session
       req.session.user = result;
       res.json({
-        error : 0,
-        data : result,
-        msg : 'Login Success'
+        error: 0,
+        data: result,
+        msg: 'Login Success'
       });
     } else {
       res.json({
-        error : 0,
-        data : false,
-        msg : 'Login Fail'
+        error: 0,
+        data: false,
+        msg: 'Login Fail'
       });
     }
   });

@@ -1,17 +1,19 @@
-var express = require('express');
-var app = express();
+const express = require('express');
+const app = express();
 
-var root = require('./Root');
-var test = require('./TestRt');
-var util = require('./UtilRt');
-var user = require('./UserRt');
-var shopify = require('./ShopifyAccessRt');
-var olOrder = require('./OnlineOrderRt');
+const root = require('./Root');
+const test = require('./TestRt');
+const util = require('./UtilRt');
+const user = require('./UserRt');
+const shopify = require('./ShopifyAccessRt');
+const olOrder = require('./OnlineOrderRt');
+const erply = require('./ErplyAccessRt');
 
 app.use('/', root);
 app.use('/test', test);
 app.use('/utilities', util);
 app.use('/user', user);
+app.use('/erply', erply);
 app.use('/shopify', shopify);
 app.use('/online-order', olOrder);
 

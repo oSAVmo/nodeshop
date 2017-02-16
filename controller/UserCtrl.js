@@ -1,12 +1,13 @@
+/** User Controller */
 var userDao = require('../dao/UserDao');
 var log = require('../common/logger');
 
 var userCtrl = {
-    type: 'controller',
-    name: 'UserCtrl'
+  type: 'controller',
+  name: 'UserCtrl'
 };
 
-/** login controller */
+/* login */
 userCtrl.userLogin = function(user, callback) {
 
   log.info('attempt: %j', user);
@@ -16,8 +17,8 @@ userCtrl.userLogin = function(user, callback) {
     }
     if (result !== null && result !== undefined) {
       log.info('User: %j -- Login Success', {
-        id : result.id,
-        name : result.name
+        id: result.id,
+        name: result.name
       });
       callback(false, result);
     } else {
@@ -27,9 +28,9 @@ userCtrl.userLogin = function(user, callback) {
   });
 }
 
-/** reset admin controller */
+/* reset admin password */
 userCtrl.adminReset = function(user, callback) {
-  
+  // TODO
 }
 
 module.exports = userCtrl;

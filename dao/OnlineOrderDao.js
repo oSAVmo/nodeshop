@@ -1,13 +1,15 @@
-var mongo = require('../common/mongo');
-var log = require('../common/logger');
+/** data access for online orders */
+const mongo = require('../common/mongo');
+const log = require('../common/logger');
 
-var onlinOrderDao = {
-  module : 'dao',
-  name : 'OnlinOrderDao'
+/* Dao Info */
+let onlineOrderDao = {
+  module: 'dao',
+  name: 'OnlineOrderDao'
 };
 
-// get all orders
-onlinOrderDao.queryAll = function(next) {
+/* get all orders from mongoDB */
+onlineOrderDao.queryAll = function(next) {
   try {
     mongo.conn.collection('co_ol_orders').find().toArray(function(err, data) {
 
@@ -21,12 +23,12 @@ onlinOrderDao.queryAll = function(next) {
     });
   } catch (e) {
     log.error(this.name + '@getAll: %j', e);
-    next(10001, e);
+    next(e, null);
   }
 }
 
-// insert an order
-onlinOrderDao.insert = function(data, next) {
+/* insert an order into mongoDB */
+onlineOrderDao.insert = function(data, next) {
   try {
     mongo.conn.collection('co_ol_orders').insertOne(data, function(err, data) {
 
@@ -40,8 +42,8 @@ onlinOrderDao.insert = function(data, next) {
     });
   } catch (e) {
     log.error(this.name + 'insert: %j', e);
-    next(10002, e);
+    next(e, null);
   }
 }
 
-module.exports = onlinOrderDao;
+module.exports = onlineOrderDao;

@@ -1,10 +1,12 @@
-var mysql = require('mysql2');
-var log = require('./logger');
+/** MySQL database connection pool */
+const mysql = require('mysql2');
+const log = require('./logger');
 
-var db = require('../config/conf').mysql;
+const conf = require('../config/conf').mysql;
 
+let db = {};
 db.init = function() {
-  this.pool = mysql.createPool(db);
+  db.pool = mysql.createPool(conf);
   log.info('mysql pool created...');
 }
 

@@ -1,3 +1,5 @@
+/** Initialize database and data on first run */
+
 var md5 = require('../common/Utils').md5;
 var mongo = require('./mongo');
 var log = require('./logger');
@@ -5,26 +7,26 @@ var systemConst = require('../config/conf').system;
 
 var initModel = {};
 
-/** initialize database and initial data */
+/* initialize database and initial data */
 initModel.init = function() {
 
   initModel.db = mongo.conn;
-    
+
   log.info('Check system variables');
   // find init value
   systemVar = initModel.db.collection('system_var');
-  
+
   systemVar.findOne({
-    name : 'mongo_init'
+    name: 'mongo_init'
   }, {
-    fields : {
-      'name' : 1,
-      'value' : 1
+    fields: {
+      'name': 1,
+      'value': 1
     }
   }).then(function(result) {
-    
+
     log.info('mongo_init: %j', result);
-    
+
     // no init done
     if (result === undefined || result.length === 0 || systemConst.forceMongoInit) {
       log.info('init user...');
@@ -37,8 +39,8 @@ initModel.init = function() {
           log.info('update system variable...');
           // set mongo init done
           systemVar.insertOne({
-            name : 'mongo_init',
-            value : 1
+            name: 'mongo_init',
+            value: 1
           }, function(err99, data) {
             if (err99) {
               log.error(err99);
@@ -55,21 +57,21 @@ initModel.init = function() {
   });
 };
 
-/** Initialize admin user in database */
+/* Initialize default administrator in database */
 function initUser(callback) {
 
   try {
     initModel.db.createCollection('system_user');
-  } catch(e) {
+  } catch (e) {
     log.error(e);
   }
 
   let coUse = initModel.db.collection('system_user');
   let defaultAdmin = {
-    user_email : systemConst.adminEmail,
-    password : md5(systemConst.adminReset),
-    role : 'admin',
-    privilige : '*'
+    user_email: systemConst.adminEmail,
+    password: md5(systemConst.adminReset),
+    role: 'admin',
+    privilige: '*'
   };
 
   coUse.insertOne(defaultAdmin, function(err, data) {
