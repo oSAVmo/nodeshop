@@ -10,27 +10,24 @@ let productExtAPI = {
 };
 
 /* synchronize product units from erply */
-productExtAPI.syncUnits = function() {
-  return new Promise(function(resolve, reject) {
+productExtAPI.getAllUnits = function() {
+  let proc = new Promise(function(resolve, reject) {
     let param = {
-      'request': 'getProductUnits'
+      'request': 'getProductUnits',
+      'recordsOnPage': 1000
     };
     // get units from erply
     erplyAPI.callAPI(param, function(errAPI, result, status) {
+      erplyLog.info(status);
       if (errAPI) {
         erplyLog.error(errAPI);
         reject(errAPI);
       } else {
-        // save units to mysql
-        productExtDao.saveUnits(result).then(function(result) {
-          erplyLog.info(result);
-        }).catch(function(err) {
-          erplyLog.error(err);
-          reject(err);
-        });
+        resolve(result);
       } // if else
     }); // callAPI
   }); // return new promise
-};
 
+  return proc;
+}
 module.exports = productExtAPI;

@@ -23,7 +23,9 @@
     function submitForm(event) {
       let dataObj = null;
       try {
-        dataObj = eval('(' + $('#fparam').val() + ')');
+        let paramStr = $('#fparam').val().trim() === '' ? {} : $('#fparam').val();
+        console.log(paramStr);
+        dataObj = eval('(' + paramStr + ')');
       } catch(e) {
         console.log(e);
       }

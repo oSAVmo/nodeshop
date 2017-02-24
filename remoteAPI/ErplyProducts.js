@@ -20,7 +20,8 @@ productAPI.syncAll = function(callback) {
       'orderBy': 'productID',
       'orderByDir': 'desc',
       'getMatrixVariations': 1,
-      'recordsOnPage': 1000， 'pageNo': result.value
+      'recordsOnPage': 1000,
+      'pageNo': result.value
     };
   });
   syncPages(param, function() {
@@ -52,7 +53,7 @@ function syncPages(param, callback) {
           setTimeOut(function() {
             syncPages(param, function() {
               erplyLog.info('sync at %j', param);
-            })
+            });
           }, 2000);
         } else {
           callback();

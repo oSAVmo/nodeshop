@@ -48,13 +48,10 @@ app.all('*', function(req, res, next) {
 
 /* match path exceptions */
 function matchException(path) {
-  for (var i = 0; i < exeptions.length; i++) {
-    var str = exeptions[i];
-    log.info(str);
+  for (let i = 0; i < exeptions.length; i++) {
+    let str = exeptions[i];
     if (path.startsWith(str)) {
       return true;
-    } else {
-      log.info()
     }
   }
   return false;

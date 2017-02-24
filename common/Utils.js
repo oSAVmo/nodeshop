@@ -28,3 +28,16 @@ exports.md5 = function(str) {
   const crypto = require('crypto');
   return crypto.createHash('md5').update(str).digest('hex');
 }
+
+exports.formatDateISO = function(d, seperator) {
+  if (d && d instanceof Date) {
+    seperator = (seperator ? seperator : '-');
+    let yearStr = d.getFullYear() + '';
+    let monthStr = ('0' + (d.getMonth() + 1)).slice(-2);
+    let dateStr = ('0' + d.getDate()).slice(-2);
+
+    return yearStr + seperator + monthStr + seperator + dateStr;
+  } else {
+    return null;
+  }
+}

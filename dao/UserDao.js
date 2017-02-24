@@ -20,12 +20,11 @@ userDao.queryByEmail = function(email, callback) {
   var collect = mongo.conn.collection('system_user');
   collect.findOne(param).then(function(err, data) {
     if (err) {
-      log.info(err, userDao);
+      log.err(err, userDao);
     }
     callback(err, data);
-    mongo.conn.close();
   }).catch(function(err) {
-    log.error(err);
+    log.error(err, userDao);
     callback(err, null);
   });
 };
