@@ -11,26 +11,26 @@ var userDao = {
 };
 
 /* get user by email */
-userDao.queryByEmail = function(email, callback) {
+userDao.queryByEmail = function (email, callback) {
 
   var param = {
     user_email: email
   };
 
   var collect = mongo.conn.collection('system_user');
-  collect.findOne(param).then(function(err, data) {
+  collect.findOne(param).then(function (err, data) {
     if (err) {
       log.err(err, userDao);
     }
     callback(err, data);
-  }).catch(function(err) {
+  }).catch(function (err) {
     log.error(err, userDao);
     callback(err, null);
   });
 };
 
 /** user login */
-userDao.loginQuery = function(email, password, callback) {
+userDao.loginQuery = function (email, password, callback) {
 
   let param = {
     user_email: email,
@@ -42,16 +42,16 @@ userDao.loginQuery = function(email, password, callback) {
     fields: {
       'password': 0
     }
-  }).then(function(data) {
+  }).then(data => {
     callback(0, data);
-  }).catch(function(err) {
+  }).catch(err => {
     log.error(err);
     callback(err, null);
   });
 };
 
 /** reset admin password */
-userDao.resetAdmin = function(callback) {
+userDao.resetAdmin = function (callback) {
 
   let adminUser = require('../config').system
   let collect = mongo.conn.collection('system_user');
@@ -64,28 +64,28 @@ userDao.resetAdmin = function(callback) {
     }, {
       returnOriginal: false
     }),
-    function(err, data) {
+    function (err, data) {
       callback(err, data);
     };
 };
 
 /* create user */
-userDao.createUser = function(user, callback) {
+userDao.createUser = function (user, callback) {
 
   var collect = mongo.conn.collection('system_user');
-  collect.insertOne(user, function(err, data) {
+  collect.insertOne(user, function (err, data) {
     callback(err, data);
   })
 };
 
 /* change password */
-userDao.changePassword = function(email, password, newPass, callback) {
+userDao.changePassword = function (email, password, newPass, callback) {
   let user = {
     user_email: email,
     password: password
   };
   const collect = mongo.conn.collection('system_user');
-  collect.findOne(user).next(function(err, data) {
+  collect.findOne(user).next(function (err, data) {
     if (err) {
       callback(err, data);
     } else if (data.length < 1) {
@@ -98,7 +98,7 @@ userDao.changePassword = function(email, password, newPass, callback) {
         $set: {
           password: newPass
         }
-      }, function(err, data) {
+      }, function (err, data) {
         callback(err, data);
       });
     }

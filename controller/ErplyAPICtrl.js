@@ -1,6 +1,6 @@
 /** Erply API controller */
 const api = require('../remoteAPI/ErplyAPI');
-const log = require('../common/APILogger').erplyLog;
+const log = require('../common/logger');
 const erplyProductAPI = require('../remoteAPI/ErplyProducts');
 const erplyProductExtAPI = require('../remoteAPI/ErplyProductExt');
 const productExtDao = require('../dao/ProductExtDao');
@@ -39,15 +39,20 @@ ctrl.customAPICall = function (params) {
 ctrl.runSchedule = function () {
   return new Promise(function (resolve, reject) {
     systemDao.readNextTask('erply').then(task => {
-      let params = task.doc;
-      param.request = task.request;
-
-      api.callAPI(params).then(result => {
-        systemDao.removeTask(task._id);
-        resolve(result);
-      }).catch(error => {
-        reject(error);
-      });
+      if (task) {
+        log.info('running task:', task);
+        let params = task.doc;
+        params.request = task.request;
+        api.callAPI(params).then(result => {
+          systemDao.removeTask(task._id);
+          resolve(result);
+        }).catch(error => {
+          systemDao.erroredTask(task._id);
+          reject(error);
+        });
+      } else {
+        resolve(null);
+      }
     }).catch(error => {
       reject(error);
     });

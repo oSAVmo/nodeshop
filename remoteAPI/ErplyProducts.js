@@ -2,7 +2,7 @@
 const erplyAPI = require('./ErplyAPI');
 const systemDao = require('../dao/SystemDao');
 const productDao = require('../dao/ProductDao');
-const erplyLog = require('../common/APILogger.js').erplyLog;
+const log = require('../common/logger.js');
 
 const ERPLY_SYNC_PAGE = 'erply_product_sync_page'
 
@@ -13,8 +13,8 @@ let productAPI = {
 };
 
 /* sync all products */
-productAPI.syncAll = function(callback) {
-  systemDao.getSystemVar(ERPLY_SYNC_PAGE).then(function(result) {
+productAPI.syncAll = function (callback) {
+  systemDao.getSystemVar(ERPLY_SYNC_PAGE).then(function (result) {
     let param = {
       'request': 'getProducts',
       'orderBy': 'productID',
@@ -24,35 +24,35 @@ productAPI.syncAll = function(callback) {
       'pageNo': result.value
     };
   });
-  syncPages(param, function() {
-    erplyLog.info("product sync finished.");
+  syncPages(param, function () {
+    log.info("product sync finished.");
     callback(true);
   });
 };
 
 /* sync product page by page */
 function syncPages(param, callback) {
-  erplyAPI.callAPI(param, function(err, result, status) {
+  erplyAPI.callAPI(param, function (err, result, status) {
     if (err) {
       systemDao.updateSystemVar(ERPLY_SYNC_PAGE, param.pageNo).then(
-        function(result) {
-          erplyLog.info('Product Sync stopped at page %i', param.pageNo);
-        }).catch(function(err2) {
-        erplyLog.error(
+        function (result) {
+          log.info('Product Sync stopped at page %i', param.pageNo);
+        }).catch(function (err2) {
+        log.error(
           'Product Sync stopped at page %i, and failed to save page.',
           param.pageNo);
       }); // updateSysemVar
       throw err;
     } else {
       // insert product into MySQL
-      productDao.insertProducts(result).then(function(result) {
+      productDao.insertProducts(result).then(function (result) {
         // if there is next page
         if (status.recordsInResponse === param.recordsOnPage) {
           param.pageNo = param.pageNo + 1;
           // Time the api call for next page to avoid exceed erply call limits
-          setTimeOut(function() {
-            syncPages(param, function() {
-              erplyLog.info('sync at %j', param);
+          setTimeOut(function () {
+            syncPages(param, function () {
+              log.info('sync at %j', param);
             });
           }, 2000);
         } else {

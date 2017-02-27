@@ -11,8 +11,8 @@ let ctrl = {
 };
 
 /** synchronize issued coupons */
-ctrl.syncIssuedCoupons = function() {
-  return new Promise(function(resolve, reject) {
+ctrl.syncIssuedCoupons = function () {
+  return new Promise(function (resolve, reject) {
     systemDao.getSystemVar(SYS_SYNC_PAGE).then(result => {
       let currPage = result.value;
       if (currPage < 0) {
@@ -20,8 +20,9 @@ ctrl.syncIssuedCoupons = function() {
           error: 'Synchronize is already finished, use update coupon please'
         });
       } else {
-        syncIssuedCouponsNextPage(currPage, function(error, ret) {
+        syncIssuedCouponsNextPage(currPage, function (error, ret) {
           if (error) {
+            log.error(error, ctrl, 25);
             reject(error);
           } else {
             systemDao.updateSystemVar(SYS_SYNC_PAGE, ret).then(
@@ -39,31 +40,27 @@ ctrl.syncIssuedCoupons = function() {
   }); // promise
 };
 
-ctrl.expireCoupons = async function(rule) {
-  let yesterday = Date.now().setDate(Date.now().getDate() - 1);
-
-  try {
-    let coupons = await couponDao.getCoupons(rule);
-
-    let processes = coupons.map(async coup => {
-      let data = {
-        issuedCouponID: coup.ISSUED_COUPON_ID
-        expiryDate: require('../common/Utils').formatDateISO(yesterday);
-      };
-      return await systemDao.insertTask('erply', 'saveIssuedCoupon',
-        data, 10);
-    });
-
-    let rets = [];
-    for (const process of processes) {
-      rets.push(await process)
-    }
-
-    return rets;
-  } catch (e) {
-    throw e;
-  }
-}
+ctrl.expireCoupons = function (rule) {
+  let yesterday = new Date();
+  yesterday.setDate(new Date().getDate() - 1);
+  return new Promise((resolve, reject) => {
+    couponDao.getCoupons(rule).then(coupons => {
+      let data = coupons.map(coup => ({
+        issuedCouponID: coup.ISSUED_COUPON_ID,
+        expiryDate: require('../common/Utils').formatDateISO(yesterday)
+      }));
+      systemDao.insertTasks('erply', 'saveIssuedCoupon', data, 10).then(ret => {
+        resolve(ret);
+      }).catch(err => {
+        log.error(err);
+        reject(err);
+      });
+    }).catch(err => {
+      log.error(err);
+      reject(err);
+    }); // getCoupons
+  }); // Promise
+};
 
 /** sync coupons page by page */
 function syncIssuedCouponsNextPage(page, callback) {
@@ -73,7 +70,7 @@ function syncIssuedCouponsNextPage(page, callback) {
       let hasNextPage = (rt.status.recordsTotal > page * 1000);
       if (hasNextPage) {
         systemDao.updateSystemVar(SYS_SYNC_PAGE, page).then(result => {
-          setTimeOut(function() {
+          setTimeOut(function () {
             syncIssuedCouponsNext(page++, callback);
           }, 3000);
         }).catch(reasonSystem => {

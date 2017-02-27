@@ -2,12 +2,14 @@
 const request = require('request');
 const async = require('async');
 const config = require('../config/conf').erplyTest;
-const erplyLog = require('../common/APILogger').erplyLog;
+const log = require('../common/logger');
 
 const CALL_INTERVAL = 3 * 1000;
 
 // init API params
 let api = {
+  module: 'baseAPI',
+  name: 'ErplyAPI',
   sessionKey: null,
   sessionAquireTime: null,
   erplyURL: 'https://' + config.clientCode + '.erply.com/api/',
@@ -15,15 +17,15 @@ let api = {
 };
 
 /* Call API with auto session key renew */
-api.callAPI = function(params, callback) {
+api.callAPI = function (params, callback) {
   if (api.queue.length > 100) {
     callback({
       error: 'Max Erply Queue Size Reached, Call again later.'
     });
     return;
   }
-  let call = new Promise(function(resolve, reject) {
-    erplyLog.info('Start requesting ERPLY......', [api, 26]);
+  let call = new Promise(function (resolve, reject) {
+    // log.info('Start requesting ERPLY......', [api, 26]);
     let reqParam = {
       url: api.erplyURL
     };
@@ -33,10 +35,10 @@ api.callAPI = function(params, callback) {
       reqParam.form = params;
       reqParam.form.sessionKey = api.sessionKey;
       // request api
-      erplyLog.info('Request with existing session key.', [api, 36]);
-      request.post(reqParam, function(err, httpResponse, body) {
+      // log.info('Request with existing session key.', [api, 36]);
+      request.post(reqParam, function (err, httpResponse, body) {
         if (err) {
-          erplyLog.error(err);
+          log.error(err);
           reject(err);
         }
         let firstRt = JSON.parse(body);
@@ -46,7 +48,7 @@ api.callAPI = function(params, callback) {
           errCode === 1056 || errCode === 1001) {
 
           // get new session key
-          verify(function(code) {
+          verify(function (code) {
             // session key request fail
             if (code > 0) {
               reject(code);
@@ -54,13 +56,13 @@ api.callAPI = function(params, callback) {
             } else {
               reqParam.form = params;
               reqParam.form.sessionKey = api.sessionKey;
-              erplyLog.info('Request with new session key.', [api,
+              log.info('Request with new session key.', [api,
                 57
               ]);
-              request.post(reqParam, function(err2, httpResponse2,
+              request.post(reqParam, function (err2, httpResponse2,
                 body2) {
                 if (err2) {
-                  erplyLog.error(err2);
+                  log.error(err2);
                   reject(err2);
                 }
                 // return result
@@ -70,20 +72,20 @@ api.callAPI = function(params, callback) {
           });
           // no session error
         } else {
-          erplyLog.info('request with valid session key.', [api, 73]);
+          // log.info('request with valid session key.', [api, 73]);
           resolve(firstRt);
         }
       });
       // no session key yet
     } else {
-      erplyLog.info('first login, getting session key...', [api, 79]);
-      verify(function(code) {
+      // log.info('first login, getting session key...', [api, 79]);
+      verify(function (code) {
         if (code > 0) {
           callback(code, null);
         } else {
           reqParam.form = params;
           reqParam.form.sessionKey = api.sessionKey;
-          request.post(reqParam, function(err3, httpResponse3, body3) {
+          request.post(reqParam, function (err3, httpResponse3, body3) {
             if (err3) {
               reject(err3);
             }
@@ -120,9 +122,9 @@ function verify(callback) {
   };
 
   try {
-    request.post(param, function(err, httpResponse, body) {
+    request.post(param, function (err, httpResponse, body) {
       if (err) {
-        erplyLog.error(err, [api, 125]);
+        log.error(err, [api, 125]);
         throw err;
       } else {
 
@@ -138,7 +140,7 @@ function verify(callback) {
 
     });
   } catch (e) {
-    erplyLog.error(e, [api, 141]);
+    log.error(e, [api, 141]);
     throw e;
   }
 };

@@ -12,6 +12,7 @@ var log = require('./common/logger');
 var mongo = require('./common/mongo');
 var mysql = require('./common/mysql');
 var conf = require('./config/conf');
+var sched = require('./common/Schedule');
 // var mongoDBInit = require('./common/MongoInit');
 
 var app = express();
@@ -27,7 +28,7 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 
 // initialize mongoDB
-mongo.init(function() {
+mongo.init(function () {
 
   // init session
   app.use(session({
@@ -56,5 +57,8 @@ mongo.init(function() {
   app.use(routerConfig);
 
 });
+
+
+sched.startAll();
 
 module.exports = app;

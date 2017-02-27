@@ -2,7 +2,7 @@
 const erplyAPI = require('./ErplyAPI');
 const systemDao = require('../dao/SystemDao');
 const productExtDao = require('../dao/ProductExtDao');
-const erplyLog = require('../common/APILogger.js').erplyLog;
+const log = require('../common/logger.js');
 
 let productExtAPI = {
   module: 'api',
@@ -10,17 +10,17 @@ let productExtAPI = {
 };
 
 /* synchronize product units from erply */
-productExtAPI.getAllUnits = function() {
-  let proc = new Promise(function(resolve, reject) {
+productExtAPI.getAllUnits = function () {
+  let proc = new Promise(function (resolve, reject) {
     let param = {
       'request': 'getProductUnits',
       'recordsOnPage': 1000
     };
     // get units from erply
-    erplyAPI.callAPI(param, function(errAPI, result, status) {
-      erplyLog.info(status);
+    erplyAPI.callAPI(param, function (errAPI, result, status) {
+      log.info(status);
       if (errAPI) {
-        erplyLog.error(errAPI);
+        log.error(errAPI);
         reject(errAPI);
       } else {
         resolve(result);
