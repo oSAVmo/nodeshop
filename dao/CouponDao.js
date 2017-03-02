@@ -14,10 +14,13 @@ dao.saveCoupons = function (coupons) {
     mysql.pool.getConnection(function (errConn, conn) {
       if (errConn) {
         reject(errConn);
+      } else if (coupons.length === 0) {
+        resolve(null);
       } else {
-        let sql =
-          'INSERT INTO SP_TAB_ISSUED_COUPON(' + ISSUED_COUPON_FIELDS + ') VALUES ?';
-        let data = coupons.map(coup => [
+        let sql = 'INSERT INTO SP_TAB_ISSUED_COUPON(' + ISSUED_COUPON_FIELDS + ') VALUES ?' +
+          ' ON DUPLICATE KEY UPDATE EXPIRY_DATE = VALUES(EXPIRY_DATE), STATUS = VALUES(STATUS)';
+
+        let inserts = coupons.map(coup => [
           coup.issuedCouponID,
           coup.couponID,
           coup.couponCode,
@@ -28,7 +31,8 @@ dao.saveCoupons = function (coupons) {
           coup.status,
           coup.added
         ]);
-        conn.query(sql, [data], function (errQuery, results, fields) {
+        let fSQL = conn.format(sql, [inserts]);
+        conn.query(fSQL, function (errQuery, results, fields) {
           conn.release();
           if (errQuery) {
             reject(errQuery);
@@ -69,11 +73,8 @@ dao.getCoupons = function (queryParam) {
 
           sql = sql.slice(0, -5);
         }
-        let desql = conn.format(sql, queryValues);
-        log.info(desql);
 
-        conn.query(sql, queryValues, function (errQuery, results,
-          fields) {
+        conn.query(sql, queryValues, function (errQuery, results, fields) {
           conn.release();
           if (errQuery) {
             log.error(errQuery, dao, 63);
@@ -85,6 +86,30 @@ dao.getCoupons = function (queryParam) {
       } // if else
     }); // getConnection
   }); // promise
+};
+
+dao.getUniqCouponCode = function () {
+  return new Promise((resolve, reject) => {
+    mysql.pool.getConnection((errConn, conn) => {
+      if (errConn) {
+        reject(errConn);
+      } else {
+        let sql = 'SELECT DISTINCT COUPON_CODE FROM SP_TAB_ISSUED_COUPON WHERE EXPIRY_DATE = \'0000-00-00\' OR EXPIRY_DATE >= ?';
+        let eDate = require('../common/Utils').formatDateISO(new Date());
+
+        log.debug(conn.format(sql, [eDate]));
+        conn.query(sql, [eDate], (errQuery, results, fields) => {
+          conn.release();
+          if (errQuery) {
+            log.error(errQuery, dao, 63);
+            reject(errQuery);
+          } else {
+            resolve(results);
+          }
+        }); // query
+      } // if else
+    }); // getConnection
+  }); // Promise
 };
 
 module.exports = dao;

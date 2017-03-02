@@ -57,11 +57,26 @@ router.post('/coupon_sync', function (req, res, next) {
   });
 });
 
+/** disable coupons: {couponCode: string} */
 router.post('/coupon_disable', function (req, res, next) {
   let param = {
     COUPON_CODE: req.body.couponCode === '' ? null : req.body.couponCode
   };
   erplyCouponCtrl.expireCoupons(param).then(result => {
+    res.json({
+      error: 0,
+      result: result
+    });
+  }).catch(error => {
+    res.json({
+      error: error,
+      result: null
+    });
+  });
+});
+
+router.get('/couponcode', function (req, res, next) {
+  erplyCouponCtrl.getUniqCouponCode().then(result => {
     res.json({
       error: 0,
       result: result

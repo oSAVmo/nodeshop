@@ -1,7 +1,7 @@
 /** API for Erply access */
 const request = require('request');
 const async = require('async');
-const config = require('../config/conf').erplyTest;
+const config = require('../config/conf').erplyProduction;
 const log = require('../common/logger');
 
 const CALL_INTERVAL = 3 * 1000;

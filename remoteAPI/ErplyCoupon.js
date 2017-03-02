@@ -6,13 +6,19 @@ let api = {
   name: 'ErplyIssuedCoupon'
 };
 
-api.getIssuedCouponsPage = function (page) {
+api.getIssuedCouponsPage = function (page, changedSince) {
   return new Promise(function (resolve, reject) {
     let params = {
       'request': 'getIssuedCoupons',
-      'recordsOnPage': 1000,
+      'recordsOnPage': 100,
       'pageNo': page
+    };
+
+    if (changedSince) {
+      params.changedSince = changedSince;
     }
+
+    log.debug(params);
     erplyAPI.callAPI(params, function (err, result, status) {
       if (err) {
         reject(err);

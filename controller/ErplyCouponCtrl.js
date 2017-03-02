@@ -10,40 +10,51 @@ let ctrl = {
   name: 'ErplyCouponCtrl'
 };
 
-/** synchronize issued coupons */
+/** 
+ * synchronize issued coupons 
+ */
 ctrl.syncIssuedCoupons = function () {
   return new Promise(function (resolve, reject) {
     systemDao.getSystemVar(SYS_SYNC_PAGE).then(result => {
-      let currPage = result.value;
+      let currPage = result.value ? result.value : 1;
+      let changedSince = null;
       if (currPage < 0) {
-        reject({
-          error: 'Synchronize is already finished, use update coupon please'
-        });
-      } else {
-        syncIssuedCouponsNextPage(currPage, function (error, ret) {
-          if (error) {
-            log.error(error, ctrl, 25);
-            reject(error);
-          } else {
-            systemDao.updateSystemVar(SYS_SYNC_PAGE, ret).then(
-              result => {
-                resolve(result);
-              }).catch(reason => {
-              reject(reason);
-            }); // updateSystemVar
-          } // if else
-        }); // syncIssuedCouponsNextPage
-      } // if else
+        currPage = 1;
+        changedSince = result.time;
+      }
+      syncIssuedCouponsNextPage(currPage, changedSince, function (error, ret) {
+        if (error) {
+          log.error(error, ctrl, 25);
+          reject(error);
+        } else {
+          log.debug(ret);
+          systemDao.updateSystemVar({
+            name: SYS_SYNC_PAGE,
+            value: ret.page,
+            time: ret.time
+          }).then(
+            result => {
+              resolve(result);
+            }).catch(reason => {
+            reject(reason);
+          }); // updateSystemVar
+        } // if else
+      }); // syncIssuedCouponsNextPage
     }).catch(reason => {
       reject(reason);
     }); // getSystemVar
   }); // promise
 };
 
+/**
+ * Make coupon expire
+ */
 ctrl.expireCoupons = function (rule) {
   let yesterday = new Date();
   yesterday.setDate(new Date().getDate() - 1);
   return new Promise((resolve, reject) => {
+    // only expire active coupons
+    rule.status = 'ACTIVE';
     couponDao.getCoupons(rule).then(coupons => {
       let data = coupons.map(coup => ({
         issuedCouponID: coup.ISSUED_COUPON_ID,
@@ -62,22 +73,46 @@ ctrl.expireCoupons = function (rule) {
   }); // Promise
 };
 
-/** sync coupons page by page */
-function syncIssuedCouponsNextPage(page, callback) {
+/** 
+ * get unique coupon codes 
+ */
+ctrl.getUniqCouponCode = function () {
+  return new Promise((resolve, reject) => {
+    couponDao.getUniqCouponCode().then(result => {
+      resolve(result);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
 
-  couponAPI.getIssuedCouponsPage(page).then(rt => {
+/**
+ * sync coupons page by page
+ */
+function syncIssuedCouponsNextPage(page, changedSince, callback) {
+
+  couponAPI.getIssuedCouponsPage(page, changedSince).then(rt => {
+    log.debug(rt);
+    let syncTime = rt.status.requestUnixTime;
     couponDao.saveCoupons(rt.result).then(result => {
-      let hasNextPage = (rt.status.recordsTotal > page * 1000);
+      log.debug('sync coupon page: ' + page);
+      let hasNextPage = (rt.status.recordsTotal > page * 100);
       if (hasNextPage) {
-        systemDao.updateSystemVar(SYS_SYNC_PAGE, page).then(result => {
-          setTimeOut(function () {
-            syncIssuedCouponsNext(page++, callback);
+        systemDao.updateSystemVar({
+          name: SYS_SYNC_PAGE,
+          value: page
+        }).then(result => {
+          setTimeout(function () {
+            syncIssuedCouponsNextPage(page + 1, changedSince, callback);
           }, 3000);
         }).catch(reasonSystem => {
           callback(reasonSystem, null);
         });
       } else {
-        callback(0, -1);
+        callback(0, {
+          page: -1,
+          time: syncTime
+        });
       }
     }).catch(reasonSaveCoupons => {
       callback(reasonSaveCoupons, null);

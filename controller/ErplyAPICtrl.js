@@ -12,7 +12,9 @@ let ctrl = {
   name: 'ErplyAPICtrl'
 }
 
-/* call erply api with custom parameter (dev test tool only) */
+/**
+ * call erply api with custom parameter (dev test tool only) 
+ */
 ctrl.customAPICall = function (params) {
 
   let process = new Promise(function (resolve, reject) {
@@ -36,6 +38,9 @@ ctrl.customAPICall = function (params) {
   return process;
 };
 
+/**
+ * Run scheduled tasks
+ */
 ctrl.runSchedule = function () {
   return new Promise(function (resolve, reject) {
     systemDao.readNextTask('erply').then(task => {

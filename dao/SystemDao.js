@@ -21,7 +21,7 @@ systemDao.getSystemVar = function (name) {
     col.findOne({
       name: name
     }).then(result => {
-      resolve(result.value);
+      resolve(result);
     }).catch(error => {
       reject(error);
     });
@@ -29,17 +29,22 @@ systemDao.getSystemVar = function (name) {
 };
 
 /* update system variable */
-systemDao.updateSystemVar = function (name, value) {
+systemDao.updateSystemVar = function (varObj) {
 
   return new Promise(function (resolve, reject) {
     let colSystem = mongo.conn.collection('system_var');
-
+    log.debug(varObj);
+    let updateObj = {};
+    if (varObj.value) {
+      updateObj.value = varObj.value;
+    }
+    if (varObj.time) {
+      updateObj.time = varObj.time;
+    }
     colSystem.findOneAndUpdate({
-      name: name
+      name: varObj.name
     }, {
-      $set: {
-        value: value
-      }
+      $set: updateObj
     }, {
       upsert: true
     }).then(function (result) {
