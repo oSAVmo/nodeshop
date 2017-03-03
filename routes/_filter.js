@@ -8,15 +8,14 @@ var app = express();
 const exeptions = ['/user/login', '/shopify', '/general', '/utilities/mail'];
 
 /* enable CROS */
-app.all('*', function(req, res, next) {
+app.all('*', function (req, res, next) {
   log.info('grant CROSS DOMAIN...');
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
   next();
 });
 
 /* login filter */
-app.all('*', function(req, res, next) {
+app.all('*', function (req, res, next) {
   //  console.log('this is a console out');
   log.info('REQUEST LOG: requesting %j|%j from %j|%j', req.url, req.path,
     req.headers.host, req.headers.orgin);

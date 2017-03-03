@@ -19,7 +19,7 @@ exports.formatFormJSON = function (formData) {
     }
   });
   return result;
-}
+};
 
 /**
  * MD5 Encryption

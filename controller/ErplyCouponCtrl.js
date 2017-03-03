@@ -3,7 +3,7 @@ const couponDao = require('../dao/CouponDao');
 const systemDao = require('../dao/SystemDao');
 const log = require('../common/logger');
 
-const SYS_SYNC_PAGE = 'issued_coupon_sync_page';
+const SYS_COUPON_SYNC_PAGE = 'issued_coupon_sync_page';
 
 let ctrl = {
   module: 'controller',
@@ -92,7 +92,6 @@ ctrl.getUniqCouponCode = function () {
 function syncIssuedCouponsNextPage(page, changedSince, callback) {
 
   couponAPI.getIssuedCouponsPage(page, changedSince).then(rt => {
-    log.debug(rt);
     let syncTime = rt.status.requestUnixTime;
     couponDao.saveCoupons(rt.result).then(result => {
       log.debug('sync coupon page: ' + page);

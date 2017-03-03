@@ -1,13 +1,14 @@
 const cron = require('node-cron');
 const erplyCtrl = require('../controller/ErplyAPICtrl');
+const config = require('../config/conf');
 
 let schedule = {
   module: 'common',
   name: 'Schedule'
 }
 
-schedule.dayTask = cron.schedule('*/10 * 7-19 * * *', runDayTask);
-schedule.nightTask = cron.schedule('*/5 * 0-6,19-23 * * *', runNightTask);
+schedule.dayTask = cron.schedule('*/' + config.scheduleTask.dayTimeInterval + ' * 7-19 * * *', runDayTask);
+schedule.nightTask = cron.schedule('*/' + config.scheduleTask.dayTimeInterval + ' * 0-6,19-23 * * *', runNightTask);
 
 function runDayTask() {
   runSavedTasks();
