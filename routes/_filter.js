@@ -17,7 +17,7 @@ app.all('*', function (req, res, next) {
 /* login filter */
 app.all('*', function (req, res, next) {
   //  console.log('this is a console out');
-  log.info('REQUEST LOG: requesting %j|%j from %j|%j', req.url, req.path,
+  log.info('REQUEST LOG: requesting %s|%s from %s|%s', req.url, req.path,
     req.headers.host, req.headers.orgin);
   var loginFilter = false;
   // in exeption

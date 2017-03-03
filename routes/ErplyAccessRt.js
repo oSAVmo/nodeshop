@@ -19,7 +19,7 @@ router.post('/custom', function (req, res, next) {
     });
   }).catch(function (reason) {
     // response with error
-    log.error('failed because: %s', reason);
+    log.error('failed because: %j', reason);
     res.json({
       error: reason,
       result: null
