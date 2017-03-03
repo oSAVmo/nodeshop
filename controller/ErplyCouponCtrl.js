@@ -15,7 +15,7 @@ let ctrl = {
  */
 ctrl.syncIssuedCoupons = function () {
   return new Promise(function (resolve, reject) {
-    systemDao.getSystemVar(SYS_SYNC_PAGE).then(result => {
+    systemDao.getSystemVar(SYS_COUPON_SYNC_PAGE).then(result => {
       let currPage = result.value ? result.value : 1;
       let changedSince = null;
       if (currPage < 0) {
@@ -29,7 +29,7 @@ ctrl.syncIssuedCoupons = function () {
         } else {
           log.debug(ret);
           systemDao.updateSystemVar({
-            name: SYS_SYNC_PAGE,
+            name: SYS_COUPON_SYNC_PAGE,
             value: ret.page,
             time: ret.time
           }).then(
@@ -98,7 +98,7 @@ function syncIssuedCouponsNextPage(page, changedSince, callback) {
       let hasNextPage = (rt.status.recordsTotal > page * 100);
       if (hasNextPage) {
         systemDao.updateSystemVar({
-          name: SYS_SYNC_PAGE,
+          name: SYS_COUPON_SYNC_PAGE,
           value: page
         }).then(result => {
           setTimeout(function () {
