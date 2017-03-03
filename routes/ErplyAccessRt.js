@@ -50,6 +50,7 @@ router.post('/coupon_sync', function (req, res, next) {
       result: result
     });
   }).catch(error => {
+    log.error(error, 'ErplyAccessRt: 53');
     res.json({
       error: error,
       result: null
